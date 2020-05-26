@@ -20,3 +20,8 @@ class RentalLocation:
 
     def __hash__(self):
         return hash((self.max_capacity, self.available))
+
+
+class NotEnoughCarsException(Exception):
+    """Signifies insufficient cars in rental lot for intended operation."""
+    pass
