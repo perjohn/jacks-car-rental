@@ -10,6 +10,7 @@ from transition_probabilities import TransitionProbabilities
 MAX_CARS = 20
 MAX_CARS_MOVED = 5
 TRANSFER_COST = 2
+PARKING_COST = 4
 RENTAL_CREDIT = 10
 GAMMA = 0.9
 VALUE_CHANGE_THRESHOLD = 5
@@ -87,10 +88,17 @@ class JacksCarRentalSolver:
         return self.calculate_action_value(action, location_1, location_2)
 
     def calculate_action_value(self, action: int, location_1: RentalLocation, location_2: RentalLocation):
-        result = -TRANSFER_COST * abs(action)
+        if action <= 0:
+            result = -TRANSFER_COST * abs(action)
+        else:
+            result = -TRANSFER_COST * (action - 1)
         try:
             location_1.transfer_cars(-action)
             location_2.transfer_cars(action)
+            if location_1.available > 10:
+                result -= PARKING_COST
+            if location_2.available > 10:
+                result -= PARKING_COST
         except NotEnoughCarsException:
             return BAD_MOVE_COST
         for requests_1 in range(self.trans_prob_req_1.start_index, self.trans_prob_req_1.end_index):
